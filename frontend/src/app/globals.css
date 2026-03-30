@@ -1,0 +1,25 @@
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #F7F8FA;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input, textarea {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

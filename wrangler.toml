@@ -1,0 +1,80 @@
+# =============================================================================
+# Cloudflare Workers 設定ファイル
+# 駐車場保守管理システム - パイロット版
+# =============================================================================
+
+name = "parking-maintenance-worker"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# -------------------------------------------------------------------
+# D1 データベース バインディング
+# D1はCloudflareのサーバーレスSQLiteデータベース
+# report_sessions と images テーブルを管理する
+# -------------------------------------------------------------------
+[[d1_databases]]
+binding = "DB"
+database_name = "parking-maintenance-db"
+database_id = "YOUR_D1_DATABASE_ID" # `wrangler d1 create parking-maintenance-db` で取得
+
+# -------------------------------------------------------------------
+# R2 ストレージ バインディング
+# 巡回スタッフが撮影した画像の保存先
+# -------------------------------------------------------------------
+[[r2_buckets]]
+binding = "IMAGES_BUCKET"
+bucket_name = "parking-maintenance-images"
+
+# -------------------------------------------------------------------
+# Vectorize インデックス バインディング
+# 画像の埋め込みベクトルを保存し、類似画像検索（RAG）を実現する
+# text-embedding-004 は 768次元のベクトルを生成する
+# -------------------------------------------------------------------
+[[vectorize]]
+binding = "VECTORIZE_INDEX"
+index_name = "parking-damage-vectors"
+# ⚠️ bge-base-en-v1.5 は 768次元を出力するため、
+#    Vectorize インデックスも --dimensions=768 で作成すること
+
+# -------------------------------------------------------------------
+# Workers AI バインディング
+# 画像説明テキストのベクトル化に使用（@cf/baai/bge-base-en-v1.5）
+# Cloudflare Workers 組み込みのため追加費用なし
+# -------------------------------------------------------------------
+[ai]
+binding = "AI"
+
+# -------------------------------------------------------------------
+# Queues バインディング
+# 画像アップロード完了後に非同期でAI解析をトリガーする
+# Producer: アップロードAPIがセッションIDを送信
+# Consumer: AI解析ワーカーが処理を実行
+# -------------------------------------------------------------------
+[[queues.producers]]
+binding = "ANALYSIS_QUEUE"
+queue = "parking-analysis-queue"
+
+[[queues.consumers]]
+queue = "parking-analysis-queue"
+max_batch_size = 5        # 一度に処理する最大メッセージ数
+max_batch_timeout = 30    # バッチタイムアウト（秒）
+max_retries = 3           # 失敗時の最大リトライ回数
+
+# -------------------------------------------------------------------
+# 環境変数 & シークレット
+# REPLICATE_API_KEY は `wrangler secret put REPLICATE_API_KEY` で設定
+# -------------------------------------------------------------------
+[vars]
+ENVIRONMENT = "production"
+WORKER_URL = "https://parking-maintenance-worker.YOUR_SUBDOMAIN.workers.dev"
+
+# シークレット（wrangler secret put コマンドで設定）:
+# - REPLICATE_API_KEY : Replicate APIキー（google/gemini-3-flash呼び出し用）
+# - CORS_ORIGIN       : フロントエンドのオリジン（例: https://your-app.vercel.app）
+
+# -------------------------------------------------------------------
+# ローカル開発環境設定
+# -------------------------------------------------------------------
+[env.development]
+vars = { ENVIRONMENT = "development", WORKER_URL = "http://localhost:8787" }

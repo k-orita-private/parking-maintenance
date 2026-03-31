@@ -11,14 +11,14 @@
  */
 
 import { useState, useCallback, useRef } from "react";
-import type { Session, AiAnalysis } from "../lib/api";
+import type { Session, AiAnalysis } from "./lib/api";
 import {
   uploadSession,
   fetchSessions,
   fetchSession,
   approveSession,
   pollSessionStatus,
-} from "../lib/api";
+} from "./lib/api";
 
 // =============================================================================
 // ユーティリティ & 定数

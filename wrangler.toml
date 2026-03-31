@@ -16,7 +16,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "parking-maintenance-db"
-database_id = "YOUR_D1_DATABASE_ID" # `wrangler d1 create parking-maintenance-db` で取得
+database_id = "6d9840c8-479e-4b9c-a155-8b3f7c2a01de" # `wrangler d1 create parking-maintenance-db` で取得
 
 # -------------------------------------------------------------------
 # R2 ストレージ バインディング

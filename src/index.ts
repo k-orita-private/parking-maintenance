@@ -74,6 +74,22 @@ export default {
     }
 
     try {
+      // R2画像配信エンドポイント
+      if (url.pathname.startsWith("/images/") && request.method === "GET") {
+        const r2Key = url.pathname.replace("/images/", "");
+        const object = await env.IMAGES_BUCKET.get(r2Key);
+        if (!object) {
+          return new Response("Not Found", { status: 404 });
+        }
+        return new Response(object.body, {
+          headers: {
+            "Content-Type": object.httpMetadata?.contentType ?? "image/jpeg",
+            "Cache-Control": "public, max-age=31536000",
+            "Access-Control-Allow-Origin": "*",
+          },
+        });
+      }
+
       // ルーティング
       if (url.pathname === "/upload" && request.method === "POST") {
         return handleUpload(request, env);

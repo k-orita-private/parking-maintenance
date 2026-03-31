@@ -67,7 +67,7 @@ max_retries = 3           # 失敗時の最大リトライ回数
 # -------------------------------------------------------------------
 [vars]
 ENVIRONMENT = "production"
-WORKER_URL = "WORKER_URL = "https://parking-maintenance-worker.garden-in-the-hand.workers.dev/"
+WORKER_URL = "https://parking-maintenance.garden-in-the-hand.workers.dev"
 
 # シークレット（wrangler secret put コマンドで設定）:
 # - REPLICATE_API_KEY : Replicate APIキー（google/gemini-3-flash呼び出し用）

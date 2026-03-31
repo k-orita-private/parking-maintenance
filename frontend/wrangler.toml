@@ -1,0 +1,4 @@
+# このファイルはフロントエンド用のダミーです
+# Cloudflare PagesがWorkerとしてデプロイしないようにするためのものです
+name = "parking-maintenance-frontend-dummy"
+pages_build_output_dir = ".next"
